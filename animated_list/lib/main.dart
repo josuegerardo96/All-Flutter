@@ -58,24 +58,30 @@ class _MyAppState extends State<MyApp> {
   SizeTransition Fruit_TileList(Fruits fruit, int index, Animation<double> animation) {
     return SizeTransition(
       sizeFactor: animation,
-      child: Container(
-          margin: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white,
-          ),
-          child: ListTile(
-            contentPadding: EdgeInsets.all(16),
-            leading: CircleAvatar(
-              radius: 32,
-              backgroundImage: NetworkImage(fruit.getImage),
+      child: GestureDetector(
+        onTap: (){
+          removeANDinsertBACK(index);
+        },
+        child: Container(
+            margin: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
             ),
-            title: Text(fruit.getName.toString()),
-            trailing: IconButton(
-              icon: Icon(Icons.delete, color: Colors.red[600],),
-              onPressed: () => removeItem(index),
-            ),
-          )),
+            child: ListTile(
+              contentPadding: EdgeInsets.all(16),
+              leading: CircleAvatar(
+                radius: 32,
+                backgroundImage: NetworkImage(fruit.getImage),
+                
+              ),
+              title: Text(fruit.getName.toString()),
+              trailing: IconButton(
+                icon: Icon(Icons.delete, color: Colors.red[600],),
+                onPressed: () => removeItem(index),
+              ),
+            )),
+      ),
     );
   }
 
@@ -98,4 +104,34 @@ class _MyAppState extends State<MyApp> {
         .insertItem(newIndex, duration: Duration(milliseconds: 400));
   }
 
+  // Quita del principio y luego lo inserta en el final
+  void removeANDinsert(int i){
+    // eliminarlo
+    Fruits fruta = fruits[i];
+    fruits.removeAt(i);
+    listKey.currentState!.removeItem(
+        i, (context, animation) => Fruit_TileList(fruta, i, animation),
+        duration: Duration(milliseconds: 400)
+    );
+    // insertarlo en la parte de abajo
+    final newIndex = fruits.length;
+    fruits.insert(newIndex, fruta);
+    listKey.currentState!
+        .insertItem(newIndex, duration: Duration(milliseconds: 400));
+  }
+
+  // Quita del final y luego lo inserta en el principio
+  void removeANDinsertBACK(int i){
+    // eliminarlo
+    Fruits fruta = fruits[i];
+    fruits.removeAt(i);
+    listKey.currentState!.removeItem(
+        i, (context, animation) => Fruit_TileList(fruta, i, animation),
+        duration: Duration(milliseconds: 400)
+    );
+    // insertarlo en la parte de abajo
+    fruits.insert(0, fruta);
+    listKey.currentState!
+        .insertItem(0, duration: Duration(milliseconds: 400));
+  }
 }
